@@ -5,65 +5,50 @@ import 'package:provider/provider.dart';
 import 'package:window_size/window_size.dart';
 
 void main() {
-  runApp(ChangeNotifierProvider(
-    create: (context) => AgeProvider(),
-    child: MyApp(),
-  ));
+  runApp(AgeCounterApp());
 }
 
-class MyApp extends StatelessWidget {
+class AgeCounterApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: AgeCounter(),
+      home: AgeCounterScreen(),
     );
   }
 }
 
-class AgeProvider extends ChangeNotifier {
-  int _age = 0;
-
-  int get age => _age;
-
-  void increaseAge() {
-    _age++;
-    notifyListeners();
-  }
-
-  void decreaseAge() {
-    if (_age > 0) {
-      _age--;
-      notifyListeners();
-    }
-  }
+class AgeCounterScreen extends StatefulWidget {
+  @override
+  _AgeCounterScreenState createState() => _AgeCounterScreenState();
 }
 
-class AgeCounter extends StatelessWidget {
+class _AgeCounterScreenState extends State<AgeCounterScreen> {
+  int _age = 0;
+
+  String get ageMessage {
+    if (_age <= 12) return "You're a child!";
+    if (_age <= 19) return "Teenager time!";
+    if (_age <= 30) return "You're a young adult!";
+    if (_age <= 50) return "You're an adult now!";
+    return "Golden years!";
+  }
+
+  Color get backgroundColor {
+    if (_age <= 12) return Colors.lightBlue;
+    if (_age <= 19) return Colors.lightGreen;
+    if (_age <= 30) return Colors.yellow;
+    if (_age <= 50) return Colors.orange;
+    return Colors.grey;
+  }
+
+  Color get progressColor {
+    if (_age <= 33) return Colors.green;
+    if (_age <= 67) return Colors.yellow;
+    return Colors.red;
+  }
+
   @override
   Widget build(BuildContext context) {
-    int age = context.watch<AgeProvider>().age;
-
-    Color backgroundColor;
-    String message;
-    //Mile strone categories
-    if (age <= 12) {
-      backgroundColor = Colors.lightBlue;
-      message = "You're a child!";
-    } else if (age <= 19) {
-      backgroundColor = Colors.lightGreen;
-      message = "Teenager time!";
-    } else if (age <= 30) {
-      backgroundColor = Colors.yellow;
-      message = "You're a young adult!";
-    } else if (age <= 50) {
-      backgroundColor = Colors.orange;
-      message = "You're an adult now!";
-    } else {
-      backgroundColor = Colors.grey;
-      message = "Golden years!";
-    }
-    //made sure colors work
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(title: Text("Age Counter")),
@@ -72,23 +57,56 @@ class AgeCounter extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "I am $age years old",
+              "I am $_age years old",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10),
             Text(
-              message,
-              style: TextStyle(fontSize: 18, fontStyle: FontStyle.italic),
+              ageMessage,
+              style: TextStyle(fontSize: 18),
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => context.read<AgeProvider>().increaseAge(),
-              child: Text("Increase Age"),
+            LinearProgressIndicator(
+              value: _age / 99,
+              backgroundColor: Colors.white,
+              color: progressColor,
+              minHeight: 10,
             ),
-            SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () => context.read<AgeProvider>().decreaseAge(),
-              child: Text("Reduce Age"),
+            SizedBox(height: 20),
+            Slider(
+              value: _age.toDouble(),
+              min: 0,
+              max: 99,
+              divisions: 99,
+              label: _age.toString(),
+              onChanged: (double value) {
+                setState(() {
+                  _age = value.toInt();
+                });
+              },
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      if (_age > 0) _age--;
+                    });
+                  },
+                  child: Text("Reduce Age"),
+                ),
+                SizedBox(width: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      if (_age < 99) _age++;
+                    });
+                  },
+                  child: Text("Increase Age"),
+                ),
+              ],
             ),
           ],
         ),
