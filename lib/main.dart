@@ -63,7 +63,7 @@ class AgeCounter extends StatelessWidget {
       backgroundColor = Colors.grey;
       message = "Golden years!";
     }
-
+    //made sure colors work
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(title: Text("Age Counter")),
