@@ -46,7 +46,7 @@ class AgeCounter extends StatelessWidget {
 
     Color backgroundColor;
     String message;
-
+    //Mile strone categories
     if (age <= 12) {
       backgroundColor = Colors.lightBlue;
       message = "You're a child!";
